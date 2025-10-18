@@ -12,11 +12,15 @@ builder.Services.AddEndpointsApiExplorer();
 //CORS Config | Allow communication between different domains
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalhost",
-        policy => policy.WithOrigins("http://localhost:3000") // React Application URL
-                        .AllowAnyMethod()
-                        .AllowAnyHeader());
+    options.AddPolicy("LocalDev", policy =>
+    {
+        policy/*.WithOrigins("http://localhost:3000")*/
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
 });
+
 
 //Configure ports
 builder.WebHost.ConfigureKestrel(options =>
@@ -61,11 +65,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-app.UseAuthorization();
+// Apply CORS before auth / routing
+app.UseCors("LocalDev");
 
-// Apply CORS Policy
-app.UseCors("AllowLocalhost");
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 app.Run();
