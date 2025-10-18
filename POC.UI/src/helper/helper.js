@@ -1,0 +1,1 @@
+export const globalUser = { id: 1, username: "TechGuru99"}
